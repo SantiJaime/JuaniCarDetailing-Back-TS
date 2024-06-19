@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { type IService } from "../types";
 import { validationResult } from "express-validator";
 import ServiceModel from "../models/service";
 
@@ -7,7 +8,7 @@ export const getAllServices = async (
   res: Response
 ): Promise<void> => {
   try {
-    const services = await ServiceModel.find();
+    const services: IService[] = await ServiceModel.find();
     res.status(200).json({ msg: "Servicios encontrados", services });
   } catch (error) {
     res
@@ -27,7 +28,7 @@ export const getOneService = async (
     return;
   }
   try {
-    const service = await ServiceModel.findById(req.params.id);
+    const service: IService | null = await ServiceModel.findById(req.params.id);
     if (!service) {
       res.status(404).json({ msg: "Servicio no encontrado" });
       return;
@@ -49,7 +50,7 @@ export const createService = async (
     return;
   }
   try {
-    const newService = new ServiceModel(req.body);
+    const newService: IService = new ServiceModel(req.body);
     newService.save();
     res.status(201).json({ msg: "Servicio creado correctamente", newService });
   } catch (error) {
@@ -68,7 +69,7 @@ export const updateService = async (
     return;
   }
   try {
-    const updatedService = await ServiceModel.findByIdAndUpdate(
+    const updatedService: IService | null = await ServiceModel.findByIdAndUpdate(
       req.params.id,
       req.body,
       {

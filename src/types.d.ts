@@ -1,13 +1,15 @@
+import { type Document } from "mongoose";
+
 export interface IServer {
   listen(): void;
 }
-export interface IService {
+export interface IService extends Document{
   nombre: string;
   precio: number;
   descripcion: string;
   imagen: string;
 }
-export interface IUser {
+export interface IUser extends Document{
   email: string;
   password: string;
   name: string;
