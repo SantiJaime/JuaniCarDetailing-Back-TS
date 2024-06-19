@@ -3,13 +3,13 @@ import { type Document } from "mongoose";
 export interface IServer {
   listen(): void;
 }
-export interface IService extends Document{
+export interface IService extends Document {
   nombre: string;
   precio: number;
   descripcion: string;
   imagen: string;
 }
-export interface IUser extends Document{
+export interface IUser extends Document {
   email: string;
   password: string;
   name: string;
@@ -18,4 +18,10 @@ export interface IUser extends Document{
 export interface IUserLogin {
   email: string;
   password: string;
+}
+export interface IUpdateServiceFields {
+  nombre: string;
+  descripcion: string;
+  precio: number;
+  categoria: string;
 }

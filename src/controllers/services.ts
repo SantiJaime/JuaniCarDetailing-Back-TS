@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { type IService } from "../types";
+import type { IUpdateServiceFields, IService } from "../types";
 import { validationResult } from "express-validator";
 import ServiceModel from "../models/service";
 
@@ -29,10 +29,6 @@ export const getOneService = async (
   }
   try {
     const service: IService | null = await ServiceModel.findById(req.params.id);
-    if (!service) {
-      res.status(404).json({ msg: "Servicio no encontrado" });
-      return;
-    }
     res.status(200).json({ msg: "Servicio encontrado", service });
   } catch (error) {
     res.status(500).json({ msg: "No se pudo encontrar el servicio", error });
@@ -58,6 +54,27 @@ export const createService = async (
   }
 };
 
+const filterFields = (
+  body: Partial<IService>,
+): IUpdateServiceFields => {
+  const allowedFields: (keyof IUpdateServiceFields)[] = [
+    "nombre",
+    "descripcion",
+    "precio",
+    "categoria",
+  ];
+  const filteredBody: Partial<IUpdateServiceFields> = {};
+
+  Object.keys(body).forEach((key) => {
+    if (allowedFields.includes(key as keyof IUpdateServiceFields)) {
+      filteredBody[key as keyof IUpdateServiceFields] =
+        body[key as keyof IService];
+    }
+  });
+
+  return filteredBody as IUpdateServiceFields;
+};
+
 export const updateService = async (
   req: Request,
   res: Response
@@ -69,17 +86,11 @@ export const updateService = async (
     return;
   }
   try {
-    const updatedService: IService | null = await ServiceModel.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
+    const filteredBody = filterFields(req.body);
+    const updatedService: IService | null =
+      await ServiceModel.findByIdAndUpdate(req.params.id, filteredBody, {
         new: true,
-      }
-    );
-    if (!updatedService) {
-      res.status(404).json({ msg: "Servicio no encontrado" });
-      return;
-    }
+      });
     res
       .status(200)
       .json({ msg: "Servicio actualizado correctamente", updatedService });

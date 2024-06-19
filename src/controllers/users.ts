@@ -60,7 +60,9 @@ export const updateUser = async (
   try {
     const updatedUser: IUser | null = await UserModel.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      {
+        name: req.body.name,
+      },
       {
         new: true,
       }
