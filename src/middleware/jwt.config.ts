@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import type { JwtPayload, Secret } from "jsonwebtoken";
-import { type IUserLogin } from "../types.d";
+import { type IUserLogin } from "../types";
 import { SECRET_KEY } from "../constants/const";
 
 export const generateToken = (user: IUserLogin): string => {

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { type Document, Schema, model } from "mongoose";
-import { type IService } from "../types.d";
+import { type IService } from "../types";
 
 interface IServiceDocument extends IService, Document {}
 

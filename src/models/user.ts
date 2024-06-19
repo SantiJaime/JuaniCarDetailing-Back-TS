@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { type Document, Schema, model } from "mongoose";
-import { type IUser } from "../types.d";
+import { type IUser } from "../types";
 
 interface IUserDocument extends IUser, Document {}
 

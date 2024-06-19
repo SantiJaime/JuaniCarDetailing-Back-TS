@@ -4,7 +4,7 @@ import servicesRoutes from "../routes/services.routes";
 import usersRoutes from "../routes/users.routes";
 import morgan from "morgan";
 import cors from "cors";
-import { type IServer } from "../types.d";
+import { type IServer } from "../types";
 
 class Server implements IServer {
   private app: express.Application;
