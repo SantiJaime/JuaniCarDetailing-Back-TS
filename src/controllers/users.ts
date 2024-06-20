@@ -109,7 +109,9 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       email: req.body.email,
     });
     if (!user) {
-      res.status(404).json({ msg: "Usuario no encontrado" });
+      res
+        .status(404)
+        .json({ msg: "Correo electrónico y/o contraseña incorrectos" });
       return;
     }
     const checkPass = await bcrypt.compare(req.body.password, user.password);

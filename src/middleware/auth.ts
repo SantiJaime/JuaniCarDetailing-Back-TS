@@ -13,6 +13,7 @@ const auth =
         if (verify && role === verify.user.role) next();
         else res.status(401).json({ msg: "No estás autorizado" });
       }
+      else res.status(401).json({ msg: "No existe token" });
     } catch (error) {
       res.status(500).json({ msg: "Error al obtener el token", error });
     }
