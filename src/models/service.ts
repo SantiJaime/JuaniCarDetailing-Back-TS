@@ -6,7 +6,11 @@ const ServiceSchema = new Schema<IService>({
   nombre: { type: String, required: true },
   descripcion: { type: String, required: true },
   precio: { type: Number, required: true },
-  imagen: { type: String, required: true },
+  imagen: {
+    type: String,
+    required: true,
+    default: "http://imgfz.com/i/I96MuxF.png",
+  },
 });
 
 ServiceSchema.methods.toJSON = function (): IService {

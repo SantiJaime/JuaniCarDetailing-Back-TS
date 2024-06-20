@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import type { IUpdateServiceFields, IService } from "../types";
 import { validationResult } from "express-validator";
 import ServiceModel from "../models/service";
+import cloudinaryConfig from "../utils/cloudinaryConfig";
 
 export const getAllServices = async (
   _req: Request,
@@ -46,18 +47,39 @@ export const createService = async (
     return;
   }
   try {
+    if (!req.file?.buffer) {
+      res
+        .status(422)
+        .json({ msg: "No se cargó ninguna imagen para el servicio" });
+      return;
+    }
+    const buffer = Buffer.from(req.file.buffer);
     const newService: IService = new ServiceModel(req.body);
-    newService.save();
-    res.status(201).json({ msg: "Servicio creado correctamente", newService });
+
+    cloudinaryConfig.uploader
+      .upload_stream({ resource_type: "image" }, async (error, result) => {
+        if (result) {
+          newService.imagen = result.secure_url;
+          await newService.save();
+          res
+            .status(201)
+            .json({ msg: "Servicio creado correctamente", newService });
+          return;
+        }
+        console.error("Hubo un error al subir la imagen a Cloudinary:", error);
+        res
+          .status(500)
+          .json({ msg: "Error al subir la imagen a Cloudinary", error });
+      })
+      .end(buffer);
   } catch (error) {
     res.status(500).json({ msg: "No se pudo crear el servicio", error });
   }
 };
 
-const filterFields = (
-  body: Partial<IService>,
-): IUpdateServiceFields => {
-  const allowedFields: (keyof IUpdateServiceFields)[] = [
+const filterFields = (body: Partial<IService>): IUpdateServiceFields => {
+  type UpdateServiceField = keyof IUpdateServiceFields;
+  const allowedFields: UpdateServiceField[] = [
     "nombre",
     "descripcion",
     "precio",
@@ -66,9 +88,8 @@ const filterFields = (
   const filteredBody: Partial<IUpdateServiceFields> = {};
 
   Object.keys(body).forEach((key) => {
-    if (allowedFields.includes(key as keyof IUpdateServiceFields)) {
-      filteredBody[key as keyof IUpdateServiceFields] =
-        body[key as keyof IService];
+    if (allowedFields.includes(key as UpdateServiceField)) {
+      filteredBody[key as UpdateServiceField] = body[key as keyof IService];
     }
   });
 

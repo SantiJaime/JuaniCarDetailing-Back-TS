@@ -8,6 +8,7 @@ import {
 } from "../controllers/services";
 import { check } from "express-validator";
 import auth from "../middleware/auth";
+import { upload } from "../utils/multerConfig";
 
 const router = Router();
 
@@ -20,11 +21,11 @@ router.get(
 router.post(
   "/",
   auth("admin"),
+  upload.single("file"),
   [
     check("nombre", "El campo nombre está vacío").notEmpty(),
     check("descripcion", "El campo descripción está vacío").notEmpty(),
     check("precio", "El campo precio está vacío").notEmpty(),
-    check("imagen", "El campo imagen está vacío").notEmpty(),
   ],
   createService
 );
