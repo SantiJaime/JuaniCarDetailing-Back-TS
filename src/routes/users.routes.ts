@@ -3,6 +3,7 @@ import {
   createUser,
   deleteUser,
   getAllUsers,
+  isAuthenticated,
   loginUser,
   updateUser,
 } from "../controllers/users";
@@ -34,6 +35,7 @@ router.post(
   ],
   loginUser
 );
+router.post("/verify-token", isAuthenticated);
 router.put(
   "/:id",
   auth("admin"),

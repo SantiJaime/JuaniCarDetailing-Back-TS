@@ -3,7 +3,9 @@ import { type IUser } from "../types";
 import UserModel from "../models/user";
 import bcrypt from "bcrypt";
 import { validationResult } from "express-validator";
-import { generateToken } from "../middleware/jwt.config";
+import { generateToken, verifyToken } from "../middleware/jwt.config";
+import { SECRET_KEY } from "../constants/const";
+import { Secret } from "jsonwebtoken";
 
 export const getAllUsers = async (
   _req: Request,
@@ -125,5 +127,30 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     res.status(200).json({ msg: "Sesión iniciada correctamente", user, token });
   } catch (error) {
     res.status(500).json({ msg: "No se pudo iniciar sesión", error });
+  }
+};
+
+export const isAuthenticated = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const token: string = req.body.token;
+    if (!token) {
+      res.status(422).json({ msg: "No ha envíado ningún token" });
+      return;
+    }
+
+    const verifiedToken = verifyToken(token, SECRET_KEY as Secret);
+    if (verifiedToken) {
+      res
+        .status(200)
+        .json({ msg: "Autenticación exitosa", isAuthenticated: true });
+    } else {
+      res.status(401).json({ msg: "Token inválido o expirado" });
+    }
+  } catch (error) {
+    console.error("Error inesperado al verificar la autenticación:", error);
+    res.status(500).json({ msg: "Error al verificar autenticación", error });
   }
 };
