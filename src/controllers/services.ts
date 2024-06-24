@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import type { IUpdateServiceFields, IService } from "../types";
+import { type IService } from "../types";
 import { validationResult } from "express-validator";
 import ServiceModel from "../models/service";
 import cloudinaryConfig from "../utils/cloudinaryConfig";
@@ -57,44 +57,31 @@ export const createService = async (
     const newService: IService = new ServiceModel(req.body);
 
     cloudinaryConfig.uploader
-      .upload_stream({ resource_type: "image" }, async (error, result) => {
-        if (result) {
-          newService.imagen = result.secure_url;
-          await newService.save();
+      .upload_stream(
+        { resource_type: "image", folder: "Juani-Detailing" },
+        async (error, result) => {
+          if (result) {
+            newService.imagen = result.secure_url;
+            await newService.save();
+            res
+              .status(201)
+              .json({ msg: "Servicio creado correctamente", newService });
+            return;
+          }
+          console.error(
+            "Hubo un error al subir la imagen a Cloudinary:",
+            error
+          );
           res
-            .status(201)
-            .json({ msg: "Servicio creado correctamente", newService });
-          return;
+            .status(500)
+            .json({ msg: "Error al subir la imagen a Cloudinary", error });
         }
-        console.error("Hubo un error al subir la imagen a Cloudinary:", error);
-        res
-          .status(500)
-          .json({ msg: "Error al subir la imagen a Cloudinary", error });
-      })
+      )
       .end(buffer);
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: "No se pudo crear el servicio", error });
   }
-};
-
-const filterFields = (body: Partial<IService>): IUpdateServiceFields => {
-  type UpdateServiceField = keyof IUpdateServiceFields;
-  const allowedFields: UpdateServiceField[] = [
-    "nombre",
-    "descripcion",
-    "precio",
-    "categoria",
-  ];
-  const filteredBody: Partial<IUpdateServiceFields> = {};
-
-  Object.keys(body).forEach((key) => {
-    if (allowedFields.includes(key as UpdateServiceField)) {
-      filteredBody[key as UpdateServiceField] = body[key as keyof IService];
-    }
-  });
-
-  return filteredBody as IUpdateServiceFields;
 };
 
 export const updateService = async (
@@ -108,9 +95,8 @@ export const updateService = async (
     return;
   }
   try {
-    const filteredBody = filterFields(req.body);
     const updatedService: IService | null =
-      await ServiceModel.findByIdAndUpdate(req.params.id, filteredBody, {
+      await ServiceModel.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
       });
     res
@@ -132,7 +118,18 @@ export const deleteService = async (
     return;
   }
   try {
-    await ServiceModel.findByIdAndDelete(req.params.id);
+    const deletedService: IService | null = await ServiceModel.findByIdAndDelete(
+      req.params.id
+    );
+    if (!deletedService) {
+      res.status(404).json({ msg: "Servicio no encontrado" });
+      return;
+    }
+    const imageCode: string = deletedService.imagen
+      .split("/")[8]
+      .split(".")[0];
+    await cloudinaryConfig.uploader.destroy(`Juani-Detailing/${imageCode}`);
+
     res.status(200).json({ msg: "Servicio eliminado correctamente" });
   } catch (error) {
     res.status(500).json({ msg: "No se pudo eliminar el servicio", error });
