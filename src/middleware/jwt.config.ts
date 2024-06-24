@@ -4,7 +4,7 @@ import { type IUserLogin } from "../types";
 import { SECRET_KEY } from "../constants/const";
 
 export const generateToken = (user: IUserLogin): string => {
-  const token = jwt.sign({ user }, SECRET_KEY as Secret, { expiresIn: "1h" });
+  const token = jwt.sign({ user }, SECRET_KEY as Secret);
   return token;
 };
 

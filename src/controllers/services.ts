@@ -73,6 +73,7 @@ export const createService = async (
       })
       .end(buffer);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ msg: "No se pudo crear el servicio", error });
   }
 };
