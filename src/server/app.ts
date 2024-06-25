@@ -2,6 +2,7 @@ import express from "express";
 import { PORT } from "../constants/const";
 import servicesRoutes from "../routes/services.routes";
 import usersRoutes from "../routes/users.routes";
+import turnsRoutes from "../routes/turns.routes";
 import morgan from "morgan";
 import cors from "cors";
 import { type IServer } from "../types";
@@ -21,6 +22,7 @@ class Server implements IServer {
   private routes(): void {
     this.app.use("/services", servicesRoutes);
     this.app.use("/users", usersRoutes);
+    this.app.use("/turns", turnsRoutes);
   }
   listen(): void {
     this.app.listen(PORT, () => console.log("Servidor en línea"));

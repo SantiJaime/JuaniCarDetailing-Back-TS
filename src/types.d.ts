@@ -25,3 +25,12 @@ export interface IUpdateServiceFields {
   precio: number;
   categoria: string;
 }
+
+export interface ITurn extends Document {
+  date: string;
+  hour: string;
+  email: string;
+  name: string;
+  service: string;
+  descrition?: string;
+}
