@@ -32,5 +32,5 @@ export interface ITurn extends Document {
   email: string;
   name: string;
   service: string;
-  descrition?: string;
+  description?: string;
 }
