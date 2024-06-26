@@ -8,7 +8,8 @@ const TurnSchema = new Schema<ITurn>({
   email: { type: String, required: true },
   name: { type: String, required: true },
   service: { type: String, required: true },
-  description: { type: String },
+  vehicle: { type: String, required: true },
+  details: { type: String },
 });
 
 TurnSchema.methods.toJSON = function (): ITurn {
