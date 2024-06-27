@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
     "dev": "nodemon",
-    "tsc": "tsc",
     "lint": "eslint src/**/*.ts"
   },
   "keywords": [],
