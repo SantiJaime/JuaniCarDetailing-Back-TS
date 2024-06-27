@@ -3,6 +3,7 @@ import {
   createUser,
   deleteUser,
   getAllUsers,
+  isAuthenticated,
   loginUser,
   updateUser,
 } from "../controllers/users";
@@ -34,10 +35,14 @@ router.post(
   ],
   loginUser
 );
+router.post("/verify-token", isAuthenticated);
 router.put(
   "/:id",
   auth("admin"),
-  [check("id", "Formato ID inválido").isMongoId()],
+  [
+    check("id", "Formato ID inválido").isMongoId(),
+    check("name", "El campo nombre está vacío").notEmpty(),
+  ],
   updateUser
 );
 router.delete(

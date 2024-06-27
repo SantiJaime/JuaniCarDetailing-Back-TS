@@ -1,21 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { type Document, Schema, model } from "mongoose";
-import { type IService } from "../types.d";
+import { Schema, model } from "mongoose";
+import { type IService } from "../types";
 
-interface IServiceDocument extends IService, Document {}
-
-const ServiceSchema = new Schema<IServiceDocument>({
+const ServiceSchema = new Schema<IService>({
   nombre: { type: String, required: true },
   descripcion: { type: String, required: true },
   precio: { type: Number, required: true },
-  imagen: { type: String, required: true },
+  imagen: {
+    type: String,
+    required: true,
+    default: "http://imgfz.com/i/I96MuxF.png",
+  },
 });
 
-ServiceSchema.methods.toJSON = function (): IServiceDocument {
+ServiceSchema.methods.toJSON = function (): IService {
   const { __v, ...service } = this.toObject();
-  return service as IServiceDocument;
+  return service as IService;
 };
 
-const ServiceModel = model<IServiceDocument>("Services", ServiceSchema);
+const ServiceModel = model<IService>("Services", ServiceSchema);
 
 export default ServiceModel;
